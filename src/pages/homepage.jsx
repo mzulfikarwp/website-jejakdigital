@@ -74,18 +74,6 @@ h2.title{font-size:clamp(28px,3.6vw,40px);margin-bottom:12px}
 .card h3{font-size:21px;margin:8px 0}
 .card p{margin:0;color:var(--text2)}
 .c1,.c6{--c:var(--green)}.c2,.c4{--c:var(--blue)}.c3{--c:var(--danger)}.c5{--c:var(--warn)}
-/* Simulasi */
-.sim{background:var(--card);border:1px solid var(--line);border-radius:26px;padding:32px;display:grid;grid-template-columns:1fr 1fr;gap:32px;box-shadow:var(--shadow)}
-.scene{background:var(--blue-soft);border-radius:18px;padding:18px 20px;margin-bottom:16px}
-.scene b{color:var(--blue)}
-.choice{display:block;width:100%;text-align:left;background:var(--bg);border:2px solid var(--line);color:var(--text);border-radius:14px;padding:14px 16px;margin-bottom:10px;font-weight:500;min-height:52px;transition:border-color .2s}
-.choice:hover,.choice[aria-pressed="true"]{border-color:var(--blue)}
-.log{background:var(--navy);color:#E6EEF9;border-radius:18px;padding:20px;font:14px/1.9 ui-monospace,Consolas,monospace;min-height:230px}
-.log h3{font:600 12px Inter;letter-spacing:.08em;color:#9DB4D6;margin-bottom:10px}
-.log p{margin:0;opacity:0;transform:translateY(6px);animation:in .4s forwards}
-.log .r{color:#FF9B9B}.log .w{color:#FBBF77}.log .g{color:var(--mint)}
-.verdict{margin-top:14px;padding:12px 14px;border-radius:12px;background:#10325F;font:500 14px/1.5 Inter}
-@keyframes in{to{opacity:1;transform:none}}
 /* Stats */
 .band{background:var(--band);color:var(--band-text);padding:48px 0}
 .band .wrap{display:flex;justify-content:space-between;align-items:center;gap:32px;flex-wrap:wrap}
@@ -98,7 +86,7 @@ footer{padding:36px 0;color:var(--text2);font-size:15px;text-align:center}
 .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s,transform .6s}
 .reveal.show{opacity:1;transform:none}
 @media(max-width:900px){
-  .hero,.sim{grid-template-columns:1fr}
+  .hero{grid-template-columns:1fr}
   .grid{grid-template-columns:1fr 1fr}
   .menu{display:none;position:absolute;top:76px;left:0;right:0;flex-direction:column;gap:0;background:var(--card);border-bottom:1px solid var(--line);padding:8px 24px}
   .menu.open{display:flex}.menu a{padding:14px 0}
@@ -131,15 +119,6 @@ const FEATURES = [
   ['04', 'Kuis ala Wayground', 'Timer, streak, dan leaderboard dari kasus nyata.', 'c4'],
   ['05', 'Studi Kasus 2021-2026', 'Skala, dampak, dan korban tiap kasus.', 'c5'],
   ['06', 'Profil dan Badge', 'Skor privasi, progres, dan pencapaian.', 'c6'],
-]
-
-const SCENES = [
-  { t: 'Cek-in lokasi + foto cangkir', v: 'Risiko tinggi: orang asing bisa menebak rutinitas dan kapan rumahmu kosong.',
-    log: [['r', '09:15 lokasi tepat kafe terpublikasi'], ['w', '09:16 jam & kebiasaan ngopi terbaca'], ['w', '09:16 teman dekat teridentifikasi dari tag']] },
-  { t: 'Unggah foto tanpa lokasi, tunda 1 jam', v: 'Cukup aman: masih periksa latar foto yang bisa membocorkan tempat.',
-    log: [['g', '09:15 lokasi tidak dipublikasikan'], ['w', '10:15 foto terunggah, ada nama kafe di latar'], ['g', '10:15 rutinitas sulit dilacak']] },
-  { t: 'Tidak membagikan apa pun', v: 'Paling aman, tetapi kamu tetap bisa berbagi dengan aman lewat pengaturan teman dekat.',
-    log: [['g', '09:15 tidak ada data publik baru'], ['g', '09:15 jejak tetap minim']] },
 ]
 
 // Angka yang berhitung naik saat terlihat di layar
@@ -190,10 +169,6 @@ export default function Homepage({ onOpenSimulasi }) {
   const score = habits.reduce((s, h) => s + (isSafe(h) ? h.w : 0), 0)
   const level = score >= 80 ? 'Pendekar Privasi' : score >= 50 ? 'Waspada' : 'Terbuka Lebar'
   const barColor = score >= 80 ? 'var(--green)' : score >= 50 ? 'var(--warn)' : 'var(--danger)'
-
-  // ---------- Simulasi mini ----------
-  const [pick, setPick] = useState(null)
-  const scene = pick !== null ? SCENES[pick] : null
 
   // ---------- Scroll reveal ----------
   useEffect(() => {
@@ -292,37 +267,6 @@ export default function Homepage({ onOpenSimulasi }) {
                   <small>{no}</small><h3>{title}</h3><p>{desc}</p>
                 </article>
               ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="simulasi" style={{ paddingTop: 24 }}>
-          <div className="wrap">
-            <h2 className="title reveal">Coba simulasi singkat</h2>
-            <p className="sub reveal">Satu keputusan kecil, dan lihat data apa yang terekam. Semua data di sini fiktif.</p>
-            <div className="sim reveal">
-              <div>
-                <div className="scene"><b>09.15 · Kafe Senja</b><br />Rani sedang minum kopi. Teman-temannya menyuruh ia membagikan momen ini. Apa yang Rani lakukan?</div>
-                {SCENES.map((s, i) => (
-                  <button key={s.t} className="choice" aria-pressed={pick === i} onClick={() => setPick(i)}>
-                    {String.fromCharCode(65 + i)}. {s.t}
-                  </button>
-                ))}
-                <button className="btn btn-out" style={{ minHeight: 44, marginTop: 6 }} onClick={() => setPick(null)}>Ulangi</button>
-              </div>
-              <div className="log" aria-live="polite">
-                <h3>DATA LOG · RANI (FIKTIF)</h3>
-                {scene ? (
-                  <div key={pick}>
-                    {scene.log.map(([cls, text], j) => (
-                      <p key={j} className={cls} style={{ animationDelay: j * 0.35 + 's' }}>{text}</p>
-                    ))}
-                    <div className="verdict" style={{ animation: 'in .4s ' + scene.log.length * 0.35 + 's both', opacity: 0 }}>{scene.v}</div>
-                  </div>
-                ) : (
-                  <p style={{ opacity: 0.6, animation: 'none' }}>Pilih tindakan untuk melihat data yang terekam…</p>
-                )}
-              </div>
             </div>
           </div>
         </section>
