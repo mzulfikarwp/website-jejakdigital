@@ -4,9 +4,10 @@ import Navbar from "./components/Navbar";
 import HomePage from "./pages/homepage";
 import SimulasiPage from "./pages/Simulasi";
 import Edukasi from "./pages/edukasi";
+import KuisPage from "./pages/kuis";
 
-// Urutan halaman menentukan arah geser: maju = geser ke kiri, mundur = ke kanan
-const ORDER = { home: 0, edukasi: 1, simulasi: 2 };
+// Urutan halaman (sama dengan urutan menu) menentukan arah geser: maju = geser ke kiri, mundur = ke kanan
+const ORDER = { home: 0, edukasi: 1, simulasi: 2, kuis: 3 };
 
 // Efek geser memakai View Transitions API: browser memotret layar lalu menggesernya
 // di GPU, jadi tidak berat walau halamannya panjang. Navbar tidak ikut bergerak.
@@ -56,10 +57,12 @@ export default function App() {
       <Navbar page={page} onNavigate={go} />
       {page === "simulasi" && <SimulasiPage />}
       {page === "edukasi" && <Edukasi />}
+      {page === "kuis" && <KuisPage />}
       {page === "home" && (
         <HomePage
           onOpenSimulasi={() => go("simulasi")}
           onOpenEdukasi={(hash) => go("edukasi", hash)}
+          onOpenKuis={() => go("kuis")}
         />
       )}
     </>

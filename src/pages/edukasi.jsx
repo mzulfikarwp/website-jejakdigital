@@ -38,6 +38,7 @@ body{margin:0;background:var(--bg)}
 .edu h3 {
   font-family: "Space Grotesk", "Inter", sans-serif;
   margin: 0;
+  color: inherit;
 }
 
 .edu p {
@@ -194,17 +195,19 @@ body{margin:0;background:var(--bg)}
 
 /* ---------- Tips dan trik ---------- */
 .edu-tips {
-  background: var(--band);
-  color: #fff;
+  background: var(--card);
+  color: var(--text);
+  border-block: 1px solid var(--line);
   padding: 36px 0 40px;
 }
 
 .edu-tips .edu-kicker {
-  color: var(--mint);
+  color: var(--green);
   font-size: 13px;
 }
 
 .edu-tips h2 {
+  color: var(--text);
   font-size: clamp(24px, 4vw, 30px);
   margin-bottom: 20px;
 }
@@ -216,15 +219,15 @@ body{margin:0;background:var(--bg)}
 }
 
 .edu-tip {
-  background: var(--navy-card);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: var(--bg);
+  border: 1px solid var(--line);
   border-radius: 14px;
   padding: 16px;
 }
 
 .edu-tip b {
   display: block;
-  color: var(--mint);
+  color: var(--green);
   font-size: 13px;
   margin-bottom: 8px;
 }
@@ -232,7 +235,7 @@ body{margin:0;background:var(--bg)}
 .edu-tip p {
   font-size: 12.5px;
   line-height: 1.6;
-  color: #dbe4f5;
+  color: var(--text2);
 }
 
 /* ---------- Seksi umum ---------- */

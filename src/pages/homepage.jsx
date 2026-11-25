@@ -12,12 +12,12 @@ const CSS = `
   --bg:#081A33; --card:#10325F; --text:#F1F6FC; --text2:#B8C7DC; --line:#24497D;
   --blue:#6FA8FF; --blue-soft:#17407A; --green:#34D399; --green-soft:#0F4A45;
   --warn:#FBBF77; --warn-bg:#4A3510; --danger:#FF9B9B; --danger-bg:#4D1F26;
-  --band:#06142A; --shadow:0 10px 30px rgba(0,0,0,.35);
+  --band:#10325F; --shadow:0 10px 30px rgba(0,0,0,.35);
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--text);font:400 17px/1.6 Inter,system-ui,sans-serif;transition:background .3s,color .3s}
-h1,h2,h3{font-family:'Space Grotesk',sans-serif;line-height:1.15;margin:0}
+h1,h2,h3{font-family:'Space Grotesk',sans-serif;line-height:1.15;margin:0;color:inherit}
 a{color:inherit}
 button{font:inherit;cursor:pointer}
 :focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:8px}
@@ -58,13 +58,14 @@ h2.title{font-size:clamp(28px,3.6vw,40px);margin-bottom:12px}
 .card h3{font-size:21px;margin:8px 0}
 .card p{margin:0;color:var(--text2)}
 .c1,.c6{--c:var(--green)}.c2,.c4{--c:var(--blue)}.c3{--c:var(--danger)}.c5{--c:var(--warn)}
-.band{background:var(--band);color:var(--band-text);padding:48px 0}
+.band{background:var(--card);color:var(--text);padding:48px 0;border-block:1px solid var(--line)}
 .band .wrap{display:flex;justify-content:space-between;align-items:center;gap:32px;flex-wrap:wrap}
-.band h2{font-size:30px}
-.band p{margin:6px 0 0;color:#B8C7DC}
+.band h2{font-size:30px;color:var(--text)}
+.band .wrap>div:first-child{text-align:left}
+.band p{margin:6px 0 0;color:var(--text2)}
 .stats{display:flex;gap:36px;flex-wrap:wrap}
-.stats div{font-size:15px;color:#B8C7DC}
-.stats strong{display:block;font:700 36px 'Space Grotesk';color:#fff}
+.stats div{font-size:15px;color:var(--text2)}
+.stats strong{display:block;font:700 36px 'Space Grotesk';color:var(--text)}
 footer{padding:36px 0;color:var(--text2);font-size:15px;text-align:center}
 .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s,transform .6s}
 .reveal.show{opacity:1;transform:none}
@@ -123,7 +124,7 @@ function Counter({ to, dec = 0, suf = '' }) {
   return <strong ref={ref}>{val.toFixed(dec).replace('.', ',')}{suf}</strong>
 }
 
-export default function Homepage({ onOpenSimulasi, onOpenEdukasi }) {
+export default function Homepage({ onOpenSimulasi, onOpenEdukasi, onOpenKuis }) {
   const [habits, setHabits] = useState(INIT_HABITS)
 
   useEffect(() => {
@@ -147,7 +148,7 @@ export default function Homepage({ onOpenSimulasi, onOpenEdukasi }) {
   const routes = {
     Edukasi: () => onOpenEdukasi?.(),
     Simulasi: () => onOpenSimulasi?.(),
-    Kuis: () => onOpenEdukasi?.('#kuis'),
+    Kuis: () => onOpenKuis?.(),
   }
 
   const go = (e, key) => {

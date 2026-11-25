@@ -40,12 +40,12 @@ const NAV = [
   ['Beranda', 'home', ''],
   ['Edukasi', 'edukasi', ''],
   ['Simulasi', 'simulasi', ''],
-  ['Kuis', 'edukasi', '#kuis'],
+  ['Kuis', 'kuis', ''],
   ['Profil', 'home', '#kasus'],
 ]
 
 // Menu yang menyala untuk tiap halaman
-const ACTIVE = { home: 'Beranda', edukasi: 'Edukasi', simulasi: 'Simulasi' }
+const ACTIVE = { home: 'Beranda', edukasi: 'Edukasi', simulasi: 'Simulasi', kuis: 'Kuis' }
 
 export default function Navbar({ page, onNavigate }) {
   const [menuOpen, setMenuOpen] = useState(false)
