@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const CSS = `
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
@@ -61,134 +61,8 @@ body{margin:0;background:var(--bg)}
   padding: 0 24px;
 }
 
-/* ---------- Navbar (sama dengan homepage) ---------- */
-.edu-nav {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--line);
-}
-
-.edu-navin {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 0 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 76px;
-  gap: 16px;
-}
-
-.edu-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font: 700 21px "Space Grotesk", sans-serif;
-  color: inherit;
-  text-decoration: none;
-}
-
-.edu-logo-mark {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  background: var(--green);
-  color: var(--on);
-  display: grid;
-  place-items: center;
-}
-
-.edu-links {
-  display: flex;
-  gap: 30px;
-}
-
-.edu-links a {
-  font-weight: 500;
-  color: inherit;
-  text-decoration: none;
-  padding: 6px 0;
-  border-bottom: 2px solid transparent;
-}
-
-.edu-links a:hover,
-.edu-links a[aria-current="page"] {
-  color: var(--green);
-  border-color: var(--green);
-}
-
-.edu-actions {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.edu-iconbtn {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  border: 1px solid var(--line);
-  background: var(--card);
-  color: var(--text);
-}
-
-.edu-burger {
-  display: none;
-}
-
-.edu-login {
-  background: var(--navy);
-  color: #fff;
-  border: 0;
-  border-radius: 999px;
-  padding: 0 24px;
-  min-height: 44px;
-  font-weight: 600;
-}
-
-:root[data-theme="dark"] .edu-login {
-  background: var(--mint);
-  color: #06251c;
-}
-
 .edu #kuis {
   scroll-margin-top: 96px;
-}
-
-@media (max-width: 900px) {
-  .edu-links {
-    display: none;
-    position: absolute;
-    top: 76px;
-    left: 0;
-    right: 0;
-    flex-direction: column;
-    gap: 0;
-    background: var(--card);
-    border-bottom: 1px solid var(--line);
-    padding: 8px 24px;
-  }
-  .edu-links.open {
-    display: flex;
-  }
-  .edu-links a {
-    padding: 14px 0;
-  }
-  .edu-burger {
-    display: inline-block;
-  }
-}
-
-@media (max-width: 560px) {
-  .edu-login {
-    display: none;
-  }
-  .edu-navin {
-    padding: 0 18px;
-  }
 }
 
 /* ---------- Hero ---------- */
@@ -835,37 +709,7 @@ function Kuis({ onTutup }) {
   );
 }
 
-const NAV = [["Beranda", "#beranda"], ["Edukasi", "#fitur"], ["Simulasi", "#simulasi"], ["Kuis", "#kuis"], ["Profil", "#kasus"]];
-
-export default function Edukasi({ onBackHome, onOpenSimulasi }) {
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  // Tema dipakai bersama homepage (kunci localStorage yang sama)
-  const [theme, setTheme] = useState(() => {
-    try { const t = localStorage.getItem("jd-theme"); if (t) return t; } catch (e) { /* abaikan */ }
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-  });
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    try { localStorage.setItem("jd-theme", theme); } catch (e) { /* abaikan */ }
-  }, [theme]);
-
-  // Kembali ke homepage, lalu gulir ke bagian tujuan jika ada
-  const goHome = (hash) => {
-    setMenuOpen(false);
-    if (onBackHome) onBackHome();
-    if (hash && hash !== "#beranda") setTimeout(() => document.querySelector(hash)?.scrollIntoView({ behavior: "smooth" }), 120);
-  };
-
-  const onNav = (e, label, href) => {
-    e.preventDefault();
-    setMenuOpen(false);
-    if (label === "Edukasi") window.scrollTo({ top: 0, behavior: "smooth" });
-    else if (label === "Simulasi") { if (onOpenSimulasi) onOpenSimulasi(); else goHome(href); }
-    else if (label === "Kuis") document.querySelector("#kuis")?.scrollIntoView({ behavior: "smooth" });
-    else goHome(href);
-  };
-
+export default function Edukasi() {
   const [filter, setFilter] = useState("Semua");
   const [selesai, setSelesai] = useState([1, 2]);
   const [kuisBuka, setKuisBuka] = useState(false);
@@ -881,28 +725,6 @@ export default function Edukasi({ onBackHome, onOpenSimulasi }) {
   return (
     <div className="edu">
       <style>{CSS}</style>
-      {/* Navbar (sama dengan homepage) */}
-      <header className="edu-nav">
-        <div className="edu-navin">
-          <a href="#beranda" className="edu-logo" onClick={(e) => { e.preventDefault(); goHome(); }}>
-            <span className="edu-logo-mark">J</span>
-            JejakDigital
-          </a>
-          <nav className={"edu-links" + (menuOpen ? " open" : "")} aria-label="Navigasi utama">
-            {NAV.map(([label, href]) => (
-              <a key={label} href={href} aria-current={label === "Edukasi" ? "page" : undefined} onClick={(e) => onNav(e, label, href)}>
-                {label}
-              </a>
-            ))}
-          </nav>
-          <div className="edu-actions">
-            <button type="button" className="edu-iconbtn" aria-label="Ganti mode terang/gelap" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>◐</button>
-            <button type="button" className="edu-iconbtn edu-burger" aria-label="Buka menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>☰</button>
-            <button type="button" className="edu-login">Masuk</button>
-          </div>
-        </div>
-      </header>
-
       <main>
         {/* Hero + materi */}
         <section className="edu-wrap edu-hero">

@@ -30,18 +30,6 @@ button{font:inherit;cursor:pointer}
 :root[data-theme="dark"] .btn-green{color:#06251C}
 .btn-out{background:transparent;border-color:var(--navy);color:var(--text)}
 :root[data-theme="dark"] .btn-out{border-color:var(--text2)}
-header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.nav{display:flex;align-items:center;justify-content:space-between;height:76px;gap:16px}
-.logo{display:flex;align-items:center;gap:10px;font:700 21px 'Space Grotesk';text-decoration:none}
-.logo i{width:34px;height:34px;border-radius:10px;background:var(--green);color:#fff;display:grid;place-items:center;font-style:normal}
-.menu{display:flex;gap:30px}
-.menu a{text-decoration:none;font-weight:500;padding:6px 0;border-bottom:2px solid transparent}
-.menu a:hover,.menu a.active{border-color:var(--green);color:var(--green)}
-.actions{display:flex;gap:10px;align-items:center}
-.icon-btn{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text)}
-.burger{display:none}
-.login{background:var(--navy);color:#fff;border:0;border-radius:999px;padding:0 24px;min-height:44px;font-weight:600}
-:root[data-theme="dark"] .login{background:var(--mint);color:#06251C}
 .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;padding:72px 0 80px}
 .tag{display:inline-block;background:var(--green-soft);color:var(--green);font-weight:600;font-size:15px;padding:6px 16px;border-radius:999px}
 h1{font-size:clamp(38px,5.2vw,64px);margin:22px 0}
@@ -84,21 +72,10 @@ footer{padding:36px 0;color:var(--text2);font-size:15px;text-align:center}
 @media(max-width:900px){
   .hero{grid-template-columns:1fr}
   .grid{grid-template-columns:1fr 1fr}
-  .menu{display:none;position:absolute;top:76px;left:0;right:0;flex-direction:column;gap:0;background:var(--card);border-bottom:1px solid var(--line);padding:8px 24px}
-  .menu.open{display:flex}.menu a{padding:14px 0}
-  .burger{display:inline-block}
 }
-@media(max-width:560px){.grid{grid-template-columns:1fr}.login{display:none}.hero{padding-top:40px}}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.hero{padding-top:40px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}html{scroll-behavior:auto}}
 `
-
-const NAV = [
-  ['Beranda', '#beranda'],
-  ['Edukasi', '#fitur'],
-  ['Simulasi', '#simulasi'],
-  ['Kuis', '#kasus'],
-  ['Profil', '#kasus'],
-]
 
 const INIT_HABITS = [
   { t: 'Lokasi real-time di postingan', risky: true, w: 30, on: true },
@@ -148,17 +125,7 @@ function Counter({ to, dec = 0, suf = '' }) {
 }
 
 export default function Homepage({ onOpenSimulasi, onOpenEdukasi }) {
-  const [theme, setTheme] = useState(() => {
-    try { return localStorage.getItem('jd-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') }
-    catch { return 'light' }
-  })
-  const [menuOpen, setMenuOpen] = useState(false)
   const [habits, setHabits] = useState(INIT_HABITS)
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme
-    try { localStorage.setItem('jd-theme', theme) } catch {}
-  }, [theme])
 
   useEffect(() => {
     const io = new IntersectionObserver((es) => es.forEach((e) => {
@@ -187,34 +154,12 @@ export default function Homepage({ onOpenSimulasi, onOpenEdukasi }) {
   const go = (e, key) => {
     if (!routes[key]) return
     e?.preventDefault()
-    setMenuOpen(false)
     routes[key]()
   }
 
   return (
     <>
       <style>{CSS}</style>
-      <header>
-        <div className="wrap nav">
-          <a className="logo" href="#beranda"><i>J</i>JejakDigital</a>
-          <nav className={`menu ${menuOpen ? 'open' : ''}`} aria-label="Menu utama">
-            {NAV.map(([label, href], i) => (
-              <a key={label} href={href} className={i === 0 ? 'active' : ''}
-                onClick={(e) => { setMenuOpen(false); go(e, label) }}>
-                {label}
-              </a>
-            ))}
-          </nav>
-          <div className="actions">
-            <button className="icon-btn" aria-label="Ganti mode terang/gelap"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>◐</button>
-            <button className="icon-btn burger" aria-label="Buka menu" aria-expanded={menuOpen}
-              onClick={() => setMenuOpen(!menuOpen)}>☰</button>
-            <button className="login">Masuk</button>
-          </div>
-        </div>
-      </header>
-
       <main id="beranda">
         <div className="wrap hero">
           <div>

@@ -249,54 +249,12 @@ function Audit() {
 }
 
 /* ============ HALAMAN SIMULASI ============ */
-const NAV = [["Beranda", "#beranda"], ["Edukasi", "#fitur"], ["Simulasi", "#simulasi"], ["Kuis", "#kasus"], ["Profil", "#kasus"]];
-
-export default function SimulasiPage({ onBackHome, onOpenEdukasi }) {
+export default function SimulasiPage() {
   const [tab, setTab] = useState("alur");
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  // Tema dipakai bersama homepage (kunci localStorage yang sama)
-  const [theme, setTheme] = useState(() => {
-    try { const t = localStorage.getItem("jd-theme"); if (t) return t; } catch (e) { /* abaikan */ }
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-  });
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    try { localStorage.setItem("jd-theme", theme); } catch (e) { /* abaikan */ }
-  }, [theme]);
-
-  // Kembali ke homepage, lalu gulir ke bagian tujuan jika ada
-  const goHome = (hash) => {
-    setMenuOpen(false);
-    if (onBackHome) onBackHome();
-    if (hash && hash !== "#beranda") setTimeout(() => document.querySelector(hash)?.scrollIntoView({ behavior: "smooth" }), 120);
-  };
 
   return (
     <div className="sm-page">
       <style>{CSS}</style>
-      <header className="top">
-        <div className="wrap nav">
-          <a className="logo" href="#beranda" onClick={(e) => { e.preventDefault(); goHome(); }}><i>J</i>JejakDigital</a>
-          <nav className={"menu" + (menuOpen ? " open" : "")} aria-label="Menu utama">
-            {NAV.map(([label, href]) => (
-              <a key={label} href={href} className={label === "Simulasi" ? "active" : ""}
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (label === "Simulasi") setMenuOpen(false);
-                  else if (label === "Edukasi" && onOpenEdukasi) { setMenuOpen(false); onOpenEdukasi(); }
-                  else goHome(href);
-                }}>{label}</a>
-            ))}
-          </nav>
-          <div className="actions">
-            <button type="button" className="icon-btn" aria-label="Ganti mode terang/gelap" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>◐</button>
-            <button type="button" className="icon-btn burger" aria-label="Buka menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>☰</button>
-            <button type="button" className="login">Masuk</button>
-          </div>
-        </div>
-      </header>
-
       <section className="sm" id="simulasi">
       <header className="sm-head">
         <span className="sm-pill">Edukasi privasi dan simulasi interaktif</span>
@@ -333,29 +291,7 @@ body{margin:0;background:var(--bg)}
 .sm-page *{box-sizing:border-box}
 .sm-page button{font:inherit;cursor:pointer}
 
-/* Navbar (sama dengan homepage) */
-.sm-page .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
-.sm-page .top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.sm-page .nav{display:flex;align-items:center;justify-content:space-between;height:76px;gap:16px}
-.sm-page .logo{display:flex;align-items:center;gap:10px;font:700 21px "Space Grotesk",sans-serif;text-decoration:none;color:inherit}
-.sm-page .logo i{width:34px;height:34px;border-radius:10px;background:var(--green);color:#fff;display:grid;place-items:center;font-style:normal}
-:root[data-theme="dark"] .sm-page .logo i{color:#06251C}
-.sm-page .menu{display:flex;gap:30px}
-.sm-page .menu a{text-decoration:none;font-weight:500;padding:6px 0;border-bottom:2px solid transparent;color:inherit}
-.sm-page .menu a:hover,.sm-page .menu a.active{border-color:var(--green);color:var(--green)}
-.sm-page .actions{display:flex;gap:10px;align-items:center}
-.sm-page .icon-btn{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text)}
-.sm-page .burger{display:none}
-.sm-page .login{background:var(--navy);color:#fff;border:0;border-radius:999px;padding:0 24px;min-height:44px;font-weight:600}
-:root[data-theme="dark"] .sm-page .login{background:var(--mint);color:#06251C}
 .sm-page :focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:8px}
-@media(max-width:900px){
-  .sm-page .menu{display:none;position:absolute;top:76px;left:0;right:0;flex-direction:column;gap:0;background:var(--card);border-bottom:1px solid var(--line);padding:8px 24px}
-  .sm-page .menu.open{display:flex}
-  .sm-page .menu a{padding:14px 0}
-  .sm-page .burger{display:inline-block}
-}
-@media(max-width:560px){.sm-page .login{display:none}}
 
 .sm{
   --g:var(--green, #0f7a5a);
