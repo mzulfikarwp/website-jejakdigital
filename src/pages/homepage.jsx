@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 
-// ---------- CSS (semua gaya halaman ada di sini) ----------
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap');
 :root{
@@ -31,7 +30,6 @@ button{font:inherit;cursor:pointer}
 :root[data-theme="dark"] .btn-green{color:#06251C}
 .btn-out{background:transparent;border-color:var(--navy);color:var(--text)}
 :root[data-theme="dark"] .btn-out{border-color:var(--text2)}
-/* Navbar */
 header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .nav{display:flex;align-items:center;justify-content:space-between;height:76px;gap:16px}
 .logo{display:flex;align-items:center;gap:10px;font:700 21px 'Space Grotesk';text-decoration:none}
@@ -44,7 +42,6 @@ header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 8
 .burger{display:none}
 .login{background:var(--navy);color:#fff;border:0;border-radius:999px;padding:0 24px;min-height:44px;font-weight:600}
 :root[data-theme="dark"] .login{background:var(--mint);color:#06251C}
-/* Hero */
 .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;padding:72px 0 80px}
 .tag{display:inline-block;background:var(--green-soft);color:var(--green);font-weight:600;font-size:15px;padding:6px 16px;border-radius:999px}
 h1{font-size:clamp(38px,5.2vw,64px);margin:22px 0}
@@ -63,18 +60,17 @@ h1{font-size:clamp(38px,5.2vw,64px);margin:22px 0}
 .score{display:flex;justify-content:space-between;align-items:baseline;font-weight:600}
 .score span{font:700 30px 'Space Grotesk'}
 .note{color:var(--text2);font-size:14px;margin:8px 0 0}
-/* Sections */
 section{padding:72px 0}
 h2.title{font-size:clamp(28px,3.6vw,40px);margin-bottom:12px}
 .sub{color:var(--text2);max-width:640px;margin:0 0 36px}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:26px;transition:transform .2s,box-shadow .2s}
 .card:hover{transform:translateY(-5px);box-shadow:var(--shadow)}
+.card.link{cursor:pointer}
 .card small{font:700 17px 'Space Grotesk';color:var(--c)}
 .card h3{font-size:21px;margin:8px 0}
 .card p{margin:0;color:var(--text2)}
 .c1,.c6{--c:var(--green)}.c2,.c4{--c:var(--blue)}.c3{--c:var(--danger)}.c5{--c:var(--warn)}
-/* Stats */
 .band{background:var(--band);color:var(--band-text);padding:48px 0}
 .band .wrap{display:flex;justify-content:space-between;align-items:center;gap:32px;flex-wrap:wrap}
 .band h2{font-size:30px}
@@ -104,12 +100,11 @@ const NAV = [
   ['Profil', '#kasus'],
 ]
 
-// risky = true: kebiasaan buruk jika aktif. w = pengaruh ke skor.
-const HABITS = [
-  { t: 'Lokasi real-time di postingan', risky: true, w: 30, mid: false, on: true },
-  { t: 'Sandi sama di banyak akun', risky: true, w: 30, mid: false, on: true },
+const INIT_HABITS = [
+  { t: 'Lokasi real-time di postingan', risky: true, w: 30, on: true },
+  { t: 'Sandi sama di banyak akun', risky: true, w: 30, on: true },
   { t: 'Riwayat pencarian tersimpan', risky: true, w: 15, mid: true, on: true },
-  { t: 'Verifikasi dua langkah aktif', risky: false, w: 25, mid: false, on: false },
+  { t: 'Verifikasi dua langkah aktif', risky: false, w: 25, on: false },
 ]
 
 const FEATURES = [
@@ -121,10 +116,16 @@ const FEATURES = [
   ['06', 'Profil dan Badge', 'Skor privasi, progres, dan pencapaian.', 'c6'],
 ]
 
-// Angka yang berhitung naik saat terlihat di layar
+const STATS = [
+  { to: 279, suf: ' jt', label: 'BPJS, 2021' },
+  { to: 1.3, dec: 1, suf: ' M', label: 'Registrasi SIM, 2022' },
+  { to: 15, suf: ' jt', label: 'BSI, 2023' },
+]
+
 function Counter({ to, dec = 0, suf = '' }) {
   const ref = useRef(null)
   const [val, setVal] = useState(0)
+
   useEffect(() => {
     let raf
     const io = new IntersectionObserver(([e]) => {
@@ -133,44 +134,32 @@ function Counter({ to, dec = 0, suf = '' }) {
       const t0 = performance.now()
       const step = (t) => {
         const p = Math.min((t - t0) / 1200, 1)
-        setVal(to * (1 - Math.pow(1 - p, 3)))
+        setVal(to * (1 - (1 - p) ** 3))
         if (p < 1) raf = requestAnimationFrame(step)
       }
       raf = requestAnimationFrame(step)
     }, { threshold: 0.6 })
+
     io.observe(ref.current)
     return () => { io.disconnect(); cancelAnimationFrame(raf) }
   }, [to])
+
   return <strong ref={ref}>{val.toFixed(dec).replace('.', ',')}{suf}</strong>
 }
 
-export default function Homepage({ onOpenSimulasi }) {
-  // ---------- Tema ----------
+export default function Homepage({ onOpenSimulasi, onOpenEdukasi }) {
   const [theme, setTheme] = useState(() => {
-    try {
-      const t = localStorage.getItem('jd-theme')
-      if (t) return t
-    } catch (e) { /* abaikan */ }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    try { return localStorage.getItem('jd-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') }
+    catch { return 'light' }
   })
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [habits, setHabits] = useState(INIT_HABITS)
+
   useEffect(() => {
     document.documentElement.dataset.theme = theme
-    try { localStorage.setItem('jd-theme', theme) } catch (e) { /* abaikan */ }
+    try { localStorage.setItem('jd-theme', theme) } catch {}
   }, [theme])
 
-  // ---------- Menu mobile ----------
-  const [menuOpen, setMenuOpen] = useState(false)
-
-  // ---------- Audit jejak digital ----------
-  const [habits, setHabits] = useState(HABITS)
-  const toggleHabit = (i) =>
-    setHabits((hs) => hs.map((h, idx) => (idx === i ? { ...h, on: !h.on } : h)))
-  const isSafe = (h) => (h.risky ? !h.on : h.on)
-  const score = habits.reduce((s, h) => s + (isSafe(h) ? h.w : 0), 0)
-  const level = score >= 80 ? 'Pendekar Privasi' : score >= 50 ? 'Waspada' : 'Terbuka Lebar'
-  const barColor = score >= 80 ? 'var(--green)' : score >= 50 ? 'var(--warn)' : 'var(--danger)'
-
-  // ---------- Scroll reveal ----------
   useEffect(() => {
     const io = new IntersectionObserver((es) => es.forEach((e) => {
       if (e.isIntersecting) { e.target.classList.add('show'); io.unobserve(e.target) }
@@ -179,26 +168,39 @@ export default function Homepage({ onOpenSimulasi }) {
     return () => io.disconnect()
   }, [])
 
+  // Hitung skor audit
+  const isSafe = (h) => (h.risky ? !h.on : h.on)
+  const score = habits.reduce((sum, h) => sum + (isSafe(h) ? h.w : 0), 0)
+  const [level, barColor] = score >= 80
+    ? ['Pendekar Privasi', 'var(--green)']
+    : score >= 50
+      ? ['Waspada', 'var(--warn)']
+      : ['Terbuka Lebar', 'var(--danger)']
+
+  // Peta aksi pindah halaman
+  const routes = {
+    Edukasi: () => onOpenEdukasi?.(),
+    Simulasi: () => onOpenSimulasi?.(),
+    Kuis: () => onOpenEdukasi?.('#kuis'),
+  }
+
+  const go = (e, key) => {
+    if (!routes[key]) return
+    e?.preventDefault()
+    setMenuOpen(false)
+    routes[key]()
+  }
+
   return (
     <>
       <style>{CSS}</style>
       <header>
         <div className="wrap nav">
           <a className="logo" href="#beranda"><i>J</i>JejakDigital</a>
-          <nav className={'menu' + (menuOpen ? ' open' : '')} aria-label="Menu utama">
+          <nav className={`menu ${menuOpen ? 'open' : ''}`} aria-label="Menu utama">
             {NAV.map(([label, href], i) => (
-              <a
-                key={label}
-                href={href}
-                className={i === 0 ? 'active' : ''}
-                onClick={(e) => {
-                  setMenuOpen(false)
-                  if (label === 'Simulasi' && onOpenSimulasi) {
-                    e.preventDefault()
-                    onOpenSimulasi()
-                  }
-                }}
-              >
+              <a key={label} href={href} className={i === 0 ? 'active' : ''}
+                onClick={(e) => { setMenuOpen(false); go(e, label) }}>
                 {label}
               </a>
             ))}
@@ -220,19 +222,8 @@ export default function Homepage({ onOpenSimulasi }) {
             <h1>Setiap klik meninggalkan jejak. Kenali sebelum disalahgunakan.</h1>
             <p className="lead">Lihat langsung bagaimana data harianmu terekam dan bocor, lalu pelajari cara mengamankannya lewat simulasi, animasi, dan kuis.</p>
             <div className="cta">
-              <a className="btn btn-green" href="#fitur">Mulai Belajar</a>
-              <a
-                className="btn btn-out"
-                href="#simulasi"
-                onClick={(e) => {
-                  if (onOpenSimulasi) {
-                    e.preventDefault()
-                    onOpenSimulasi()
-                  }
-                }}
-              >
-                Coba Simulasi
-              </a>
+              <a className="btn btn-green" href="#fitur" onClick={(e) => go(e, 'Edukasi')}>Mulai Belajar</a>
+              <a className="btn btn-out" href="#simulasi" onClick={(e) => go(e, 'Simulasi')}>Coba Simulasi</a>
             </div>
           </div>
 
@@ -242,16 +233,17 @@ export default function Homepage({ onOpenSimulasi }) {
               {habits.map((h, i) => {
                 const safe = isSafe(h)
                 return (
-                  <button key={h.t} className="row" role="switch" aria-checked={h.on} onClick={() => toggleHabit(i)}>
+                  <button key={h.t} className="row" role="switch" aria-checked={h.on}
+                    onClick={() => setHabits((hs) => hs.map((item, idx) => (idx === i ? { ...item, on: !item.on } : item)))}>
                     <span>{h.t}</span>
-                    <span className={'badge ' + (safe ? 'ok' : h.mid ? 'mid' : 'hi')}>
+                    <span className={`badge ${safe ? 'ok' : h.mid ? 'mid' : 'hi'}`}>
                       {safe ? 'Aman' : h.mid ? 'Sedang' : 'Risiko tinggi'}
                     </span>
                   </button>
                 )
               })}
             </div>
-            <div className="meter" aria-hidden="true"><b style={{ width: score + '%', background: barColor }} /></div>
+            <div className="meter" aria-hidden="true"><b style={{ width: `${score}%`, background: barColor }} /></div>
             <div className="score"><span>{score}</span><em style={{ fontStyle: 'normal' }}>{level}</em></div>
             <p className="note">Klik tiap kebiasaan untuk mengubahnya dan lihat skor privasimu berubah. Contoh tampilan hasil audit jejak digital.</p>
           </div>
@@ -262,11 +254,15 @@ export default function Homepage({ onOpenSimulasi }) {
             <h2 className="title reveal">Semua yang kamu butuhkan</h2>
             <p className="sub reveal">Enam fitur untuk memahami, mencoba, dan melindungi identitas digitalmu.</p>
             <div className="grid">
-              {FEATURES.map(([no, title, desc, c]) => (
-                <article key={no} className={'card reveal ' + c}>
-                  <small>{no}</small><h3>{title}</h3><p>{desc}</p>
-                </article>
-              ))}
+              {FEATURES.map(([no, title, desc, c]) => {
+                const target = no === '01' ? 'Edukasi' : no === '02' ? 'Simulasi' : no === '04' ? 'Kuis' : null
+                return (
+                  <article key={no} className={`card reveal ${c} ${target ? 'link' : ''}`}
+                    onClick={() => target && go(null, target)}>
+                    <small>{no}</small><h3>{title}</h3><p>{desc}</p>
+                  </article>
+                )
+              })}
             </div>
           </div>
         </section>
@@ -276,9 +272,9 @@ export default function Homepage({ onOpenSimulasi }) {
         <div className="wrap">
           <div><h2>Kasus nyata, bukan sekadar teori</h2><p>Angka berdasarkan laporan media dan klaim pelaku</p></div>
           <div className="stats">
-            <div><Counter to={279} suf=" jt" />BPJS, 2021</div>
-            <div><Counter to={1.3} dec={1} suf=" M" />Registrasi SIM, 2022</div>
-            <div><Counter to={15} suf=" jt" />BSI, 2023</div>
+            {STATS.map((s) => (
+              <div key={s.label}><Counter to={s.to} dec={s.dec} suf={s.suf} />{s.label}</div>
+            ))}
           </div>
         </div>
       </div>

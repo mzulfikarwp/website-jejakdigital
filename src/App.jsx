@@ -6,9 +6,15 @@ import Edukasi from "./pages/edukasi";
 export default function App() {
   const [page, setPage] = useState("home");
 
-  const go = (p) => {
+  const go = (p, hash = "") => {
     setPage(p);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (hash) {
+      setTimeout(() => {
+        document.querySelector(hash)?.scrollIntoView({ behavior: "smooth" });
+      }, 120);
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   if (page === "simulasi") {
@@ -22,8 +28,8 @@ export default function App() {
 
   if (page === "edukasi") {
     return (
-      <EdukasiPage
-        onBackHome={() => go("home")}
+      <Edukasi
+        onBackHome={(hash) => go("home", hash)}
         onOpenSimulasi={() => go("simulasi")}
       />
     );
@@ -32,7 +38,7 @@ export default function App() {
   return (
     <HomePage
       onOpenSimulasi={() => go("simulasi")}
-      onOpenEdukasi={() => go("edukasi")}
+      onOpenEdukasi={(hash) => go("edukasi", hash)}
     />
   );
 }

@@ -1,27 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const CSS = `
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
 
+/* Variabel warna yang sama dengan homepage (homepage tidak dirender di halaman ini) */
+:root{--blue:#1D5FD1;--navy:#0B2545;--blue-soft:#DCEBFF;--green:#12805C;--mint:#34D399;--green-soft:#DDF5EA;--bg:#F4F8FB;--card:#FFFFFF;--text:#0F1F33;--text2:#4B5D73;--line:#D5DEE8;--warn:#B45309;--warn-bg:#FEF3C7;--danger:#C62828;--danger-bg:#FDE8E8;--band:#0B2545;--shadow:0 10px 30px rgba(11,37,69,.08)}
+:root[data-theme="dark"]{--bg:#081A33;--card:#10325F;--text:#F1F6FC;--text2:#B8C7DC;--line:#24497D;--blue:#6FA8FF;--blue-soft:#17407A;--green:#34D399;--green-soft:#0F4A45;--warn:#FBBF77;--warn-bg:#4A3510;--danger:#FF9B9B;--danger-bg:#4D1F26;--band:#06142A;--shadow:0 10px 30px rgba(0,0,0,.35)}
+:root[data-theme="dark"] .edu{--violet:#a99bff;--navy-card:#12305b;--on:#06251C}
+body{margin:0;background:var(--bg)}
+
 .edu {
-  --teal: #0f6b66;
-  --teal-soft: #d6f1ec;
-  --navy: #0b1a3a;
+  --teal: var(--green);
+  --teal-soft: var(--green-soft);
   --navy-card: #13264d;
-  --ink: #0f172a;
-  --muted: #475569;
-  --bg: #f5f7fb;
-  --card: #ffffff;
-  --red: #b4163a;
-  --orange: #b45309;
+  --ink: var(--text);
+  --muted: var(--text2);
+  --red: var(--danger);
+  --orange: var(--warn);
   --violet: #4f35c9;
-  --mint: #3ee0c4;
+  --on: #fff;
 
   font-family: "Inter", system-ui, sans-serif;
   color: var(--ink);
   background: var(--bg);
   min-height: 100vh;
   text-align: left;
+  transition: background 0.3s, color 0.3s;
 }
 
 .edu *,
@@ -57,17 +61,24 @@ const CSS = `
   padding: 0 24px;
 }
 
-/* ---------- Navbar ---------- */
+/* ---------- Navbar (sama dengan homepage) ---------- */
 .edu-nav {
-  background: #fff;
-  border-bottom: 1px solid #e8ecf3;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
 }
 
-.edu-nav .edu-wrap {
+.edu-navin {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 72px;
+  height: 76px;
   gap: 16px;
 }
 
@@ -75,53 +86,109 @@ const CSS = `
   display: flex;
   align-items: center;
   gap: 10px;
-  font-family: "Space Grotesk", sans-serif;
-  font-weight: 700;
-  font-size: 17px;
-  color: var(--ink);
+  font: 700 21px "Space Grotesk", sans-serif;
+  color: inherit;
   text-decoration: none;
 }
 
 .edu-logo-mark {
-  width: 26px;
-  height: 26px;
-  border-radius: 7px;
-  background: var(--teal);
-  color: #fff;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--green);
+  color: var(--on);
   display: grid;
   place-items: center;
-  font-size: 15px;
 }
 
 .edu-links {
   display: flex;
-  gap: 28px;
+  gap: 30px;
 }
 
 .edu-links a {
-  font-size: 14px;
   font-weight: 500;
-  color: var(--ink);
+  color: inherit;
   text-decoration: none;
+  padding: 6px 0;
+  border-bottom: 2px solid transparent;
 }
 
+.edu-links a:hover,
 .edu-links a[aria-current="page"] {
-  color: var(--teal);
-  font-weight: 600;
+  color: var(--green);
+  border-color: var(--green);
 }
 
-.edu-links a:hover {
-  color: var(--teal);
+.edu-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.edu-iconbtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+}
+
+.edu-burger {
+  display: none;
 }
 
 .edu-login {
-  background: var(--ink);
+  background: var(--navy);
   color: #fff;
   border: 0;
   border-radius: 999px;
-  padding: 10px 20px;
+  padding: 0 24px;
+  min-height: 44px;
   font-weight: 600;
-  font-size: 13px;
+}
+
+:root[data-theme="dark"] .edu-login {
+  background: var(--mint);
+  color: #06251c;
+}
+
+.edu #kuis {
+  scroll-margin-top: 96px;
+}
+
+@media (max-width: 900px) {
+  .edu-links {
+    display: none;
+    position: absolute;
+    top: 76px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    background: var(--card);
+    border-bottom: 1px solid var(--line);
+    padding: 8px 24px;
+  }
+  .edu-links.open {
+    display: flex;
+  }
+  .edu-links a {
+    padding: 14px 0;
+  }
+  .edu-burger {
+    display: inline-block;
+  }
+}
+
+@media (max-width: 560px) {
+  .edu-login {
+    display: none;
+  }
+  .edu-navin {
+    padding: 0 18px;
+  }
 }
 
 /* ---------- Hero ---------- */
@@ -164,7 +231,7 @@ const CSS = `
   max-width: 100%;
   height: 8px;
   border-radius: 99px;
-  background: #e3e8f0;
+  background: var(--line);
   overflow: hidden;
 }
 
@@ -188,8 +255,8 @@ const CSS = `
 }
 
 .edu-chip {
-  background: #fff;
-  border: 1px solid #d5dbe6;
+  background: var(--card);
+  border: 1px solid var(--line);
   border-radius: 999px;
   padding: 9px 20px;
   font-size: 12.5px;
@@ -198,9 +265,9 @@ const CSS = `
 }
 
 .edu-chip[aria-pressed="true"] {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: #fff;
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--on);
 }
 
 /* ---------- Kartu materi ---------- */
@@ -254,7 +321,7 @@ const CSS = `
 
 /* ---------- Tips dan trik ---------- */
 .edu-tips {
-  background: var(--navy);
+  background: var(--band);
   color: #fff;
   padding: 36px 0 40px;
 }
@@ -313,7 +380,7 @@ const CSS = `
 }
 
 .edu-myth {
-  background: #fff;
+  background: var(--card);
   border-radius: 16px;
   padding: 20px 22px 22px;
   box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
@@ -347,7 +414,7 @@ const CSS = `
 }
 
 .edu-step {
-  background: #fff;
+  background: var(--card);
   border-radius: 16px;
   padding: 18px;
   box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
@@ -358,7 +425,7 @@ const CSS = `
   height: 28px;
   border-radius: 50%;
   background: var(--teal);
-  color: #fff;
+  color: var(--on);
   display: grid;
   place-items: center;
   font-weight: 700;
@@ -402,7 +469,7 @@ const CSS = `
 
 .edu-primary {
   background: var(--teal);
-  color: #fff;
+  color: var(--on);
   border: 0;
   border-radius: 10px;
   padding: 12px 24px;
@@ -411,11 +478,11 @@ const CSS = `
 }
 
 .edu-primary:hover {
-  background: #0b5753;
+  filter: brightness(0.92);
 }
 
 .edu-quiz {
-  background: #fff;
+  background: var(--card);
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 48px;
@@ -443,8 +510,8 @@ const CSS = `
 
 .edu-option {
   text-align: left;
-  background: #fff;
-  border: 1.5px solid #d5dbe6;
+  background: var(--card);
+  border: 1.5px solid var(--line);
   border-radius: 12px;
   padding: 13px 16px;
   font-size: 14px;
@@ -462,7 +529,7 @@ const CSS = `
 
 .edu-option.salah {
   border-color: var(--red);
-  background: #fdecef;
+  background: var(--danger-bg);
 }
 
 .edu-explain {
@@ -479,8 +546,9 @@ const CSS = `
 }
 
 .edu-ghost {
-  background: #fff;
-  border: 1px solid #d5dbe6;
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line);
   border-radius: 10px;
   padding: 12px 22px;
   font-weight: 600;
@@ -503,9 +571,6 @@ const CSS = `
   }
   .edu-steps {
     grid-template-columns: repeat(2, 1fr);
-  }
-  .edu-links {
-    display: none;
   }
 }
 
@@ -537,42 +602,42 @@ const MATERI = [
     id: 1,
     judul: "Sandi yang kuat",
     kategori: "Akun",
-    warna: "#0f6b66",
+    warna: "var(--green)",
     isi: "Minimal 12 karakter, gunakan frasa acak, unik di tiap akun, dan simpan di password manager.",
   },
   {
     id: 2,
     judul: "Verifikasi dua langkah",
     kategori: "Akun",
-    warna: "#0f6b66",
+    warna: "var(--green)",
     isi: "Aktifkan di email, bank, dan medsos. Pilih aplikasi autentikator dan simpan kode cadangan.",
   },
   {
     id: 3,
     judul: "Waspada phishing",
     kategori: "Akun",
-    warna: "#b4163a",
+    warna: "var(--danger)",
     isi: "Cek pengirim dan alamat link. Jangan beri OTP ke siapa pun, termasuk yang mengaku petugas.",
   },
   {
     id: 4,
     judul: "Privasi media sosial",
     kategori: "Medsos",
-    warna: "#4f35c9",
+    warna: "var(--violet)",
     isi: "Atur akun privat, matikan tag lokasi, dan jangan unggah KTP, tiket, atau boarding pass.",
   },
   {
     id: 5,
     judul: "Perangkat dan WiFi",
     kategori: "Perangkat",
-    warna: "#b45309",
+    warna: "var(--warn)",
     isi: "Perbarui sistem, kunci layar, hindari WiFi publik untuk transaksi, dan gunakan VPN.",
   },
   {
     id: 6,
     judul: "Izin aplikasi",
     kategori: "Aplikasi",
-    warna: "#4f35c9",
+    warna: "var(--violet)",
     isi: "Beri izin seperlunya, cek akses lokasi dan kontak, dan hapus aplikasi yang tidak dipakai.",
   },
 ];
@@ -770,7 +835,37 @@ function Kuis({ onTutup }) {
   );
 }
 
-export default function Edukasi() {
+const NAV = [["Beranda", "#beranda"], ["Edukasi", "#fitur"], ["Simulasi", "#simulasi"], ["Kuis", "#kuis"], ["Profil", "#kasus"]];
+
+export default function Edukasi({ onBackHome, onOpenSimulasi }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Tema dipakai bersama homepage (kunci localStorage yang sama)
+  const [theme, setTheme] = useState(() => {
+    try { const t = localStorage.getItem("jd-theme"); if (t) return t; } catch (e) { /* abaikan */ }
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  });
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    try { localStorage.setItem("jd-theme", theme); } catch (e) { /* abaikan */ }
+  }, [theme]);
+
+  // Kembali ke homepage, lalu gulir ke bagian tujuan jika ada
+  const goHome = (hash) => {
+    setMenuOpen(false);
+    if (onBackHome) onBackHome();
+    if (hash && hash !== "#beranda") setTimeout(() => document.querySelector(hash)?.scrollIntoView({ behavior: "smooth" }), 120);
+  };
+
+  const onNav = (e, label, href) => {
+    e.preventDefault();
+    setMenuOpen(false);
+    if (label === "Edukasi") window.scrollTo({ top: 0, behavior: "smooth" });
+    else if (label === "Simulasi") { if (onOpenSimulasi) onOpenSimulasi(); else goHome(href); }
+    else if (label === "Kuis") document.querySelector("#kuis")?.scrollIntoView({ behavior: "smooth" });
+    else goHome(href);
+  };
+
   const [filter, setFilter] = useState("Semua");
   const [selesai, setSelesai] = useState([1, 2]);
   const [kuisBuka, setKuisBuka] = useState(false);
@@ -786,23 +881,25 @@ export default function Edukasi() {
   return (
     <div className="edu">
       <style>{CSS}</style>
-      {/* Navbar */}
+      {/* Navbar (sama dengan homepage) */}
       <header className="edu-nav">
-        <div className="edu-wrap">
-          <a href="/" className="edu-logo">
+        <div className="edu-navin">
+          <a href="#beranda" className="edu-logo" onClick={(e) => { e.preventDefault(); goHome(); }}>
             <span className="edu-logo-mark">J</span>
             JejakDigital
           </a>
-          <nav className="edu-links" aria-label="Navigasi utama">
-            <a href="/">Beranda</a>
-            <a href="/edukasi" aria-current="page">
-              Edukasi
-            </a>
-            <a href="/simulasi">Simulasi</a>
-            <a href="/kuis">Kuis</a>
-            <a href="/profil">Profil</a>
+          <nav className={"edu-links" + (menuOpen ? " open" : "")} aria-label="Navigasi utama">
+            {NAV.map(([label, href]) => (
+              <a key={label} href={href} aria-current={label === "Edukasi" ? "page" : undefined} onClick={(e) => onNav(e, label, href)}>
+                {label}
+              </a>
+            ))}
           </nav>
-          <button className="edu-login">Masuk</button>
+          <div className="edu-actions">
+            <button type="button" className="edu-iconbtn" aria-label="Ganti mode terang/gelap" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>◐</button>
+            <button type="button" className="edu-iconbtn edu-burger" aria-label="Buka menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>☰</button>
+            <button type="button" className="edu-login">Masuk</button>
+          </div>
         </div>
       </header>
 

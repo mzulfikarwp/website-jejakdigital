@@ -249,11 +249,55 @@ function Audit() {
 }
 
 /* ============ HALAMAN SIMULASI ============ */
-export default function SimulasiPage() {
+const NAV = [["Beranda", "#beranda"], ["Edukasi", "#fitur"], ["Simulasi", "#simulasi"], ["Kuis", "#kasus"], ["Profil", "#kasus"]];
+
+export default function SimulasiPage({ onBackHome, onOpenEdukasi }) {
   const [tab, setTab] = useState("alur");
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Tema dipakai bersama homepage (kunci localStorage yang sama)
+  const [theme, setTheme] = useState(() => {
+    try { const t = localStorage.getItem("jd-theme"); if (t) return t; } catch (e) { /* abaikan */ }
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  });
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    try { localStorage.setItem("jd-theme", theme); } catch (e) { /* abaikan */ }
+  }, [theme]);
+
+  // Kembali ke homepage, lalu gulir ke bagian tujuan jika ada
+  const goHome = (hash) => {
+    setMenuOpen(false);
+    if (onBackHome) onBackHome();
+    if (hash && hash !== "#beranda") setTimeout(() => document.querySelector(hash)?.scrollIntoView({ behavior: "smooth" }), 120);
+  };
+
   return (
-    <section className="sm" id="simulasi">
+    <div className="sm-page">
       <style>{CSS}</style>
+      <header className="top">
+        <div className="wrap nav">
+          <a className="logo" href="#beranda" onClick={(e) => { e.preventDefault(); goHome(); }}><i>J</i>JejakDigital</a>
+          <nav className={"menu" + (menuOpen ? " open" : "")} aria-label="Menu utama">
+            {NAV.map(([label, href]) => (
+              <a key={label} href={href} className={label === "Simulasi" ? "active" : ""}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (label === "Simulasi") setMenuOpen(false);
+                  else if (label === "Edukasi" && onOpenEdukasi) { setMenuOpen(false); onOpenEdukasi(); }
+                  else goHome(href);
+                }}>{label}</a>
+            ))}
+          </nav>
+          <div className="actions">
+            <button type="button" className="icon-btn" aria-label="Ganti mode terang/gelap" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>◐</button>
+            <button type="button" className="icon-btn burger" aria-label="Buka menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>☰</button>
+            <button type="button" className="login">Masuk</button>
+          </div>
+        </div>
+      </header>
+
+      <section className="sm" id="simulasi">
       <header className="sm-head">
         <span className="sm-pill">Edukasi privasi dan simulasi interaktif</span>
         <h2>Coba sendiri bagaimana data bocor, lalu pelajari cara melindunginya.</h2>
@@ -270,7 +314,8 @@ export default function SimulasiPage() {
         {tab === "kuis" && <Kuis />}
         {tab === "audit" && <Audit />}
       </div>
-    </section>
+      </section>
+    </div>
   );
 }
 
@@ -278,6 +323,39 @@ export default function SimulasiPage() {
 const CSS = `
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap");
+
+/* Variabel warna yang sama dengan homepage (homepage tidak dirender di halaman ini) */
+:root{--blue:#1D5FD1;--navy:#0B2545;--blue-soft:#DCEBFF;--green:#12805C;--mint:#34D399;--green-soft:#DDF5EA;--bg:#F4F8FB;--card:#FFFFFF;--text:#0F1F33;--text2:#4B5D73;--line:#D5DEE8;--warn:#B45309;--warn-bg:#FEF3C7;--danger:#C62828;--danger-bg:#FDE8E8;--band:#0B2545;--shadow:0 10px 30px rgba(11,37,69,.08)}
+:root[data-theme="dark"]{--bg:#081A33;--card:#10325F;--text:#F1F6FC;--text2:#B8C7DC;--line:#24497D;--blue:#6FA8FF;--blue-soft:#17407A;--green:#34D399;--green-soft:#0F4A45;--warn:#FBBF77;--warn-bg:#4A3510;--danger:#FF9B9B;--danger-bg:#4D1F26;--band:#06142A;--shadow:0 10px 30px rgba(0,0,0,.35)}
+body{margin:0;background:var(--bg)}
+.sm-page{font-family:"Plus Jakarta Sans","Inter",system-ui,sans-serif;font-size:16px;line-height:1.6;color:var(--text);background:var(--bg);min-height:100vh;transition:background .3s,color .3s}
+.sm-page *{box-sizing:border-box}
+.sm-page button{font:inherit;cursor:pointer}
+
+/* Navbar (sama dengan homepage) */
+.sm-page .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.sm-page .top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.sm-page .nav{display:flex;align-items:center;justify-content:space-between;height:76px;gap:16px}
+.sm-page .logo{display:flex;align-items:center;gap:10px;font:700 21px "Space Grotesk",sans-serif;text-decoration:none;color:inherit}
+.sm-page .logo i{width:34px;height:34px;border-radius:10px;background:var(--green);color:#fff;display:grid;place-items:center;font-style:normal}
+:root[data-theme="dark"] .sm-page .logo i{color:#06251C}
+.sm-page .menu{display:flex;gap:30px}
+.sm-page .menu a{text-decoration:none;font-weight:500;padding:6px 0;border-bottom:2px solid transparent;color:inherit}
+.sm-page .menu a:hover,.sm-page .menu a.active{border-color:var(--green);color:var(--green)}
+.sm-page .actions{display:flex;gap:10px;align-items:center}
+.sm-page .icon-btn{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+.sm-page .burger{display:none}
+.sm-page .login{background:var(--navy);color:#fff;border:0;border-radius:999px;padding:0 24px;min-height:44px;font-weight:600}
+:root[data-theme="dark"] .sm-page .login{background:var(--mint);color:#06251C}
+.sm-page :focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:8px}
+@media(max-width:900px){
+  .sm-page .menu{display:none;position:absolute;top:76px;left:0;right:0;flex-direction:column;gap:0;background:var(--card);border-bottom:1px solid var(--line);padding:8px 24px}
+  .sm-page .menu.open{display:flex}
+  .sm-page .menu a{padding:14px 0}
+  .sm-page .burger{display:inline-block}
+}
+@media(max-width:560px){.sm-page .login{display:none}}
 
 .sm{
   --g:var(--green, #0f7a5a);
