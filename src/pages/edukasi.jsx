@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 const CSS = `
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
 
 /* Variabel warna yang sama dengan homepage (homepage tidak dirender di halaman ini) */
 :root{--blue:#1D5FD1;--navy:#0B2545;--blue-soft:#DCEBFF;--green:#12805C;--mint:#34D399;--green-soft:#DDF5EA;--bg:#F4F8FB;--card:#FFFFFF;--text:#0F1F33;--text2:#4B5D73;--line:#D5DEE8;--warn:#B45309;--warn-bg:#FEF3C7;--danger:#C62828;--danger-bg:#FDE8E8;--band:#0B2545;--shadow:0 10px 30px rgba(11,37,69,.08)}

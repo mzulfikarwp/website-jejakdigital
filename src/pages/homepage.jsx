@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap');
 :root{
   --blue:#1D5FD1; --navy:#0B2545; --blue-soft:#DCEBFF;
   --green:#12805C; --mint:#34D399; --green-soft:#DDF5EA;

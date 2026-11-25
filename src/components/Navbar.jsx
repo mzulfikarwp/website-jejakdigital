@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap');
 :root{--blue:#1D5FD1;--navy:#0B2545;--green:#12805C;--mint:#34D399;--bg:#F4F8FB;--card:#FFFFFF;--text:#0F1F33;--line:#D5DEE8}
 :root[data-theme="dark"]{--bg:#081A33;--card:#10325F;--text:#F1F6FC;--line:#24497D;--blue:#6FA8FF;--green:#34D399}
 html{scroll-padding-top:92px}
 .jd-spacer{height:77px}
-.jd-top{position:fixed;top:0;left:0;right:0;z-index:50;text-align:left;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);font:400 17px/1.6 Inter,system-ui,sans-serif;color:var(--text)}
+.jd-top{position:fixed;top:0;left:0;right:0;z-index:50;text-align:left;background:var(--bg);view-transition-name:jd-nav;border-bottom:1px solid var(--line);font:400 17px/1.6 Inter,system-ui,sans-serif;color:var(--text)}
 .jd-top *{box-sizing:border-box}
 .jd-top button{font:inherit;cursor:pointer}
 .jd-top :focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:8px}
@@ -33,6 +32,9 @@ html{scroll-padding-top:92px}
 @media(prefers-reduced-motion:reduce){.jd-menu{transition:none}}
 `
 
+// Font dimuat sekali di sini (bukan @import di tiap halaman) supaya pindah halaman tidak memuat ulang
+const FONT_URL = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Material+Symbols+Rounded&display=swap'
+
 // [label, halaman tujuan, hash opsional]
 const NAV = [
   ['Beranda', 'home', ''],
@@ -47,6 +49,13 @@ const ACTIVE = { home: 'Beranda', edukasi: 'Edukasi', simulasi: 'Simulasi' }
 
 export default function Navbar({ page, onNavigate }) {
   const [menuOpen, setMenuOpen] = useState(false)
+
+  useEffect(() => {
+    if (document.getElementById('jd-fonts')) return
+    const l = document.createElement('link')
+    l.id = 'jd-fonts'; l.rel = 'stylesheet'; l.href = FONT_URL
+    document.head.appendChild(l)
+  }, [])
 
   // Tema dipakai bersama semua halaman (kunci localStorage yang sama)
   const [theme, setTheme] = useState(() => {
