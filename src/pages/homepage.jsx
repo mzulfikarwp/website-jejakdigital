@@ -165,7 +165,7 @@ function Counter({ to, dec = 0, suf = '' }) {
   return <strong ref={ref}>{val.toFixed(dec).replace('.', ',')}{suf}</strong>
 }
 
-export default function Homepage() {
+export default function Homepage({ onOpenSimulasi }) {
   // ---------- Tema ----------
   const [theme, setTheme] = useState(() => {
     try {
@@ -212,7 +212,20 @@ export default function Homepage() {
           <a className="logo" href="#beranda"><i>J</i>JejakDigital</a>
           <nav className={'menu' + (menuOpen ? ' open' : '')} aria-label="Menu utama">
             {NAV.map(([label, href], i) => (
-              <a key={label} href={href} className={i === 0 ? 'active' : ''} onClick={() => setMenuOpen(false)}>{label}</a>
+              <a
+                key={label}
+                href={href}
+                className={i === 0 ? 'active' : ''}
+                onClick={(e) => {
+                  setMenuOpen(false)
+                  if (label === 'Simulasi' && onOpenSimulasi) {
+                    e.preventDefault()
+                    onOpenSimulasi()
+                  }
+                }}
+              >
+                {label}
+              </a>
             ))}
           </nav>
           <div className="actions">
@@ -233,7 +246,18 @@ export default function Homepage() {
             <p className="lead">Lihat langsung bagaimana data harianmu terekam dan bocor, lalu pelajari cara mengamankannya lewat simulasi, animasi, dan kuis.</p>
             <div className="cta">
               <a className="btn btn-green" href="#fitur">Mulai Belajar</a>
-              <a className="btn btn-out" href="#simulasi">Coba Simulasi</a>
+              <a
+                className="btn btn-out"
+                href="#simulasi"
+                onClick={(e) => {
+                  if (onOpenSimulasi) {
+                    e.preventDefault()
+                    onOpenSimulasi()
+                  }
+                }}
+              >
+                Coba Simulasi
+              </a>
             </div>
           </div>
 
